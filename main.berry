@@ -1,0 +1,14 @@
+variable = 20
+
+likely if variable == 20 {
+
+} likely elif variable < 20 {
+
+} else {
+
+}
+
+
+for i in range(10) {
+
+}
