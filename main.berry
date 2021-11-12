@@ -1,8 +1,9 @@
 variable = 20
+other_variable = "some_string\""
 
-likely if variable == 20 {
+if variable == 20 {
 
-} likely elif variable < 20 {
+} elif variable < 20 {
 
 } else {
 
@@ -10,5 +11,14 @@ likely if variable == 20 {
 
 
 for i in range(10) {
+    pass
+}
 
+
+if 1 not in [1,2,3] {
+    print("boop")
+}
+
+def myfunction(a, b, c) {
+    return variable
 }

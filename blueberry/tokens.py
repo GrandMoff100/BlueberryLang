@@ -98,7 +98,7 @@ class BinAnd(Token):
 
 
 class BinXOr(Token):
-    regex = "^"
+    regex = r"\^"
 
 
 class BinNot(Token):
@@ -148,3 +148,61 @@ class LParen(Token):
 
 class RParen(Token):
     regex = r"\)"
+
+
+class Equals(Token):
+    regex = "="
+
+
+# Namespaces
+class While(Token):
+    regex = "while"
+
+
+class If(Token):
+    regex = "if"
+
+
+class Elif(Token):
+    regex = "elif"
+
+
+class Else(Token):
+    regex = "else"
+
+
+class For(Token):
+    regex = "for"
+
+
+class In(Token):
+    regex = "in"
+
+
+class NotIn(Token):
+    regex = "not in"
+
+
+class Pass(Token):
+    regex = "pass"
+
+
+class Or(Token):
+    regex = r"or"
+
+
+class And(Token):
+    regex = r"and"
+
+
+class Not(Token):
+    regex = r"not"
+
+
+class Return(Token):
+    regex = "return"
+
+
+class Namespace(Token):
+    regex = r"[a-zA-Z_]\w*"
+
