@@ -6,5 +6,8 @@ setup(
     author = "GrandMoff100",
     author_email = "nlarsen23.student@gmail.com",
     description = "Tasty berries",
-    install_requires=["rply"]
+    install_requires=[
+        'rply',
+        'rpython'
+    ]
 )
