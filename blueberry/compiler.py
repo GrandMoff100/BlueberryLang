@@ -1,5 +1,7 @@
 from blueberry.parser import CompilerParser
+import warnings
 
 
 class Compiler(CompilerParser):
-    pass
+    def ignore_warnings(self):
+        warnings.filterwarnings('ignore')

@@ -19,6 +19,7 @@ dev.py
 .breakpointsrm 
 **/__pycache__
 *.egg-info
+pypy/
 
 # Distribution / packaging
 .Python

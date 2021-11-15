@@ -203,6 +203,9 @@ class Return(Token):
     regex = "return"
 
 
+class Function(Token):
+    regex = "def"
+
 class Namespace(Token):
     regex = r"[a-zA-Z_]\w*"
 
