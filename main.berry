@@ -1,24 +1,26 @@
-variable = 20
+# Some comment
+
+variable = 20 # Comment
 other_variable = "some_string\""
 
 if variable == 20 {
-
+    pass
 } elif variable < 20 {
-
+    pass
 } else {
-
+    pass
 }
 
 
-for i in range(10) {
+for i in [1,2,3] {
     pass
 }
 
 
 if 1 not in [1,2,3] {
-    print("boop")
+    pass
 }
 
-def myfunction(a, b, c) {
+def myfunction(ba, a, b) {
     return variable
 }

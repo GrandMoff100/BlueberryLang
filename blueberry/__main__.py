@@ -1,22 +1,17 @@
 import sys
-from blueberry.lexer import CompilerLexer
+from blueberry.compiler import Compiler
+from blueberry.state import CompilerState
 
 
-compiler = CompilerLexer()
-
+compiler = Compiler()
+# compiler.ignore_warnings()
 lexer = compiler.lg.build()
-
+parser = compiler.pg.build()
 
 file = sys.argv[1]
-
-
 with open(file, "r") as f:
     code = f.read()
 
+ast = parser.parse(lexer.lex(code))
 
-print(code)
-
-for tok in lexer.lex(code):
-    print(tok)
-
-
+print(ast)
