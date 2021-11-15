@@ -4,7 +4,7 @@ from blueberry.state import CompilerState
 
 
 compiler = Compiler()
-compiler.ignore_warnings()
+# compiler.ignore_warnings()
 lexer = compiler.lg.build()
 parser = compiler.pg.build()
 

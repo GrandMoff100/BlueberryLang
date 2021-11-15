@@ -21,6 +21,6 @@ if 1 not in [1,2,3] {
     pass
 }
 
-def myfunction(a, b, c) {
+def myfunction(ba, a, b) {
     return variable
 }

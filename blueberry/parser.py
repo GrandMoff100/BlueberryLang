@@ -32,10 +32,12 @@ class CompilerParser(CompilerLexer):
     )
 
     @pg.production("statements : statements statement", precedence="STATEMENTS")
+    @pg.production("statements : statements expression", precedence="STATEMENTS")
     def statements(p):
         return p[0] + [p[1]]
 
     @pg.production("statements : statement", precedence="STATEMENTS")
+    @pg.production("statements : expression", precedence="STATEMENTS")
     def statements_base(p):
         return [p[0]]
 
@@ -101,8 +103,7 @@ class CompilerParser(CompilerLexer):
 
     # Data Operations
     @pg.production("expression : expression TIMES expression", precedence="TIMES")
-    @pg.production("expression : expression DIVIDE expression")
-    @pg.production("expression : expression FLOORDIVIDE expression")
+    @pg.production("expression : expression DIVIDE expression", precedence="DIVIDE")
     @pg.production("expression : expression PLUS expression", precedence="PLUS")
     @pg.production("expression : expression MINUS expression", precedence="MINUS")
     @pg.production("expression : expression BINOR expression", precedence="BINOR")
@@ -160,31 +161,62 @@ class CompilerParser(CompilerLexer):
     def paren_expression(p):
         return p[1]
 
-
+    # Variable assignations
     @pg.production("statement : NAMESPACE EQUALS expression", precedence="STATEMENT")
     def statement_variable_declaration(p):
-        pass
+        return ast.VariableDeclaration()
 
-    @pg.production("statement : WHILE expression LBRACE statements RBRACE")
+    # While Loop
+    @pg.production("statement : WHILE expression LBRACE statements RBRACE", precedence="STATEMENT")
     def while_statement(p):
-        pass
+        return ast.WhileLoop()
 
+    # Function Statement
     @pg.production("statement : RETURN expression")
     def return_statement(p):
-        pass
+        return ast.Return(p[1])
 
-    @pg.production("statement : FUNCTION NAMESPACE LPAREN RPAREN LBRACE statements RBRACE")
+    @pg.production("parameters : NAMESPACE")
+    @pg.production("parameters : NAMESPACE EQUALS expression")
+    def function_parameters_base(p):
+        if len(p) == 1:
+            return ast.Parameters(p[0].value)
+        elif len(p) == 3:
+            return ast.Parameters(p[0].value, default=p[2]) 
+        raise AssertionError("This should be impossible!")
+
+    @pg.production("parameters : parameters COMMA NAMESPACE")
+    @pg.production("parameters : parameters COMMA NAMESPACE EQUALS expression")
+    def function_parameters(p):
+        if len(p) == 3:
+            return p[0].add(ast.Parameters(p[2].value))
+        elif len(p) == 5:
+            return p[0].add(ast.Parameters(p[2].value), default=p[4])
+        raise AssertionError("This should be impossible!")
+
+    @pg.production("statement : FUNCTION NAMESPACE LPAREN parameters RPAREN LBRACE statements RBRACE")
     def function_statement(p):
-        pass
+        return ast.Function(
+            p[1],
+            p[3],
+            p[6]
+        )
 
+    # For Loop
     @pg.production("statement : FOR NAMESPACE IN expression LBRACE statements RBRACE", precedence="STATEMENT")
     def for_statement(p):
-        pass
+        return ast.ForLoop(
+            p[1].value,
+            p[3],
+            p[5]
+        )
 
+    # Pass
     @pg.production("statement : PASS")
     def pass_statement(p):
-        return "ast.Pass()"
+        return ast.Pass()
 
+    # If Statement
     @pg.production("if : IF expression LBRACE statements RBRACE")
     def if_statement(p):
         pass
@@ -220,7 +252,6 @@ class CompilerParser(CompilerLexer):
     @pg.production("statement : if else")
     def statement_if_else(p):
         pass
-
 
     @pg.error
     def error(token):
