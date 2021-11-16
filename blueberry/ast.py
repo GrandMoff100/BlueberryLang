@@ -46,10 +46,7 @@ class Bool(BuiltInDataType):
 
 # Operators
 class Operation(Box):
-    def __init__(self,
-        left: Box = None,
-        right: Box = None
-    ):
+    def __init__(self, left: Box = None, right: Box = None):
         self.right = right
         self.left = left
 
@@ -187,6 +184,7 @@ class Namespace(Box):
             raise NameError(f"{self.name} is undefined")
         return value
 
+
 class Parameters(Box):
     def __init__(self, name: str, default=None):
         self.args = []
@@ -200,6 +198,7 @@ class Parameters(Box):
         self.args += parameters.args
         self.kwargs.update(parameters.kwargs)
         return self
+
 
 class Return(Box):
     def __init__(self, expression: Box):
@@ -300,5 +299,3 @@ class VariableDeclaration(Statement):
         if scope == 0:
             globals.update(value)
         locals.update(value)
-
-

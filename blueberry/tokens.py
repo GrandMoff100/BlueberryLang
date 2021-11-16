@@ -135,7 +135,7 @@ class Comma(Token):
 
 
 class Period(Token):
-    regex = "\."
+    regex = r"\."
 
 
 class Colon(Token):
@@ -206,6 +206,6 @@ class Return(Token):
 class Function(Token):
     regex = "def"
 
+
 class Namespace(Token):
     regex = r"[a-zA-Z_]\w*"
-

@@ -10,4 +10,3 @@ class CompilerLexer:
             self.lg.add(name, regex)
         self.lg.ignore(r"\s+")
         self.lg.ignore(r"#.*")
-

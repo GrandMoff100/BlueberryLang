@@ -5,7 +5,6 @@ from blueberry.lexer import CompilerLexer
 from blueberry.tokens import Token
 
 
-
 class CompilerParser(CompilerLexer):
     precedence = (
         ('left', ['STATEMENTS']),
@@ -45,7 +44,7 @@ class CompilerParser(CompilerLexer):
     @pg.production("expression : NAMESPACE")
     def object_NAMESPACE(p):
         return ast.Namespace(p[0].value)
-    
+
     @pg.production("expression : INT")
     def object_INT(p):
         return ast.Int(int(p[0].value))
@@ -89,7 +88,7 @@ class CompilerParser(CompilerLexer):
         return ast.List([p[1]])
 
     # Dict Rules
-    @pg.production("dict_items : expression COLON expression") 
+    @pg.production("dict_items : expression COLON expression")
     def dict_item(p):
         return [p[0], p[2]]
 
@@ -182,7 +181,7 @@ class CompilerParser(CompilerLexer):
         if len(p) == 1:
             return ast.Parameters(p[0].value)
         elif len(p) == 3:
-            return ast.Parameters(p[0].value, default=p[2]) 
+            return ast.Parameters(p[0].value, default=p[2])
         raise AssertionError("This should be impossible!")
 
     @pg.production("parameters : parameters COMMA NAMESPACE")

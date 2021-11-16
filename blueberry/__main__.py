@@ -1,6 +1,5 @@
 import sys
 from blueberry.compiler import Compiler
-from blueberry.state import CompilerState
 
 
 compiler = Compiler()
