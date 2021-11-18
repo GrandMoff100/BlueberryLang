@@ -1,5 +1,6 @@
 import sys
 from blueberry.compiler import Compiler
+from blueberry.ast import File
 
 
 compiler = Compiler()
@@ -11,6 +12,8 @@ file = sys.argv[1]
 with open(file, "r") as f:
     code = f.read()
 
-ast = parser.parse(lexer.lex(code))
+ast = File(parser.parse(lexer.lex(code)))
 
-print(ast)
+ast.eval()
+
+ast.tree()

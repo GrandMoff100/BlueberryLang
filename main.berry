@@ -2,9 +2,14 @@
 
 variable = 20 # Comment
 other_variable = "some_string\""
+third_variable = {1: "one"}
+
+def myfunction(ba, a, b) {
+    return variable
+}
 
 if variable == 20 {
-    pass
+    myfunction("1")
 } elif variable < 20 {
     pass
 } else {
@@ -19,8 +24,4 @@ for i in [1,2,3] {
 
 if 1 not in [1,2,3] {
     pass
-}
-
-def myfunction(ba, a, b) {
-    return variable
 }

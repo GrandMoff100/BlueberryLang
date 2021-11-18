@@ -18,7 +18,7 @@ class CompilerParser(CompilerLexer):
         ('left', ['NE', 'EQ']),
         ('nonassoc', ['GT', 'LT', 'GE', 'LE']),
         ('left', ['LSHIFT', 'RSHIFT']),
-        ('left', ['PLUS', 'MINUS']),  # 3 - 2 + 4
+        ('left', ['PLUS', 'MINUS']),  
         ('left', ['TIMES', 'DIVIDE', 'FLOORDIVIDE', 'MOD']),  # 4 * 6 / 3
         ('right', ['UMINUS']),  # -5
         ('right', ['EXPONENT']),  # 2 ** 3
@@ -33,14 +33,13 @@ class CompilerParser(CompilerLexer):
     @pg.production("statements : statements statement", precedence="STATEMENTS")
     @pg.production("statements : statements expression", precedence="STATEMENTS")
     def statements(p):
-        return p[0] + [p[1]]
+        return p[0] + (p[1],)
 
     @pg.production("statements : statement", precedence="STATEMENTS")
     @pg.production("statements : expression", precedence="STATEMENTS")
     def statements_base(p):
-        return [p[0]]
+        return (p[0],)
 
-    # Built In Objects
     @pg.production("expression : NAMESPACE")
     def object_NAMESPACE(p):
         return ast.Namespace(p[0].value)
@@ -70,14 +69,13 @@ class CompilerParser(CompilerLexer):
         }
         return ast.Bool(value_map.get(p[0].value))
 
-    # List Rules
     @pg.production("list_items : list_items COMMA expression")
     def list_item(p):
-        return p[0] + [p[2]]
+        return p[0] + (p[2],)
 
     @pg.production("list_items : expression COMMA expression")
     def list_items(p):
-        return [p[0]] + [p[2]]
+        return (p[0],) + (p[2],)
 
     @pg.production("expression : LBRACKET list_items RBRACKET")
     def list(p):
@@ -85,22 +83,20 @@ class CompilerParser(CompilerLexer):
 
     @pg.production("expression : LBRACKET expression RBRACKET")
     def list_expression(p):
-        return ast.List([p[1]])
+        return ast.List((p[1],))
 
-    # Dict Rules
     @pg.production("dict_items : expression COLON expression")
     def dict_item(p):
-        return [p[0], p[2]]
+        return ((p[0], p[2]),)
 
     @pg.production("dict_items : dict_items COMMA expression COLON expression")
     def dict_items(p):
-        return p[0] + [p[2], p[4]]
+        return p[0] + ((p[2], p[4]),)
 
     @pg.production("expression : LBRACE dict_items RBRACE")
     def dict_dict_items(p):
         return ast.Dict(dict(p[1]))
 
-    # Data Operations
     @pg.production("expression : expression TIMES expression", precedence="TIMES")
     @pg.production("expression : expression DIVIDE expression", precedence="DIVIDE")
     @pg.production("expression : expression PLUS expression", precedence="PLUS")
@@ -154,23 +150,35 @@ class CompilerParser(CompilerLexer):
     @pg.production("expression : BINNOT expression", precedence="UMINUS")
     @pg.production("expression : MINUS expression", precedence="UMINUS")
     def single_param_expression(p):
-        print(p[0], p[1], p[2])
+        if p[0].name == 'NOT':
+            return ast.Not(p[1])
+        elif p[0].name == 'BINNOT':
+            return ast.BinNot(p[1])
+        elif p[0].name == 'MINUS':
+            return ast.Neg(p[1])
+        raise AssertionError("This is not supposed to happen!")
 
     @pg.production("expression : LPAREN expression RPAREN", precedence="PAREN")
     def paren_expression(p):
         return p[1]
 
-    # Variable assignations
+    @pg.production("expression : expression PERIOD NAMESPACE")
+    def get_attribute(p):
+        pass
+
+    @pg.production("expression : expression LPAREN list_items RPAREN")
+    @pg.production("expression : expression LPAREN expression RPAREN")
+    def function_call(p):
+        pass
+
     @pg.production("statement : NAMESPACE EQUALS expression", precedence="STATEMENT")
     def statement_variable_declaration(p):
-        return ast.VariableDeclaration()
+        return ast.VariableDeclaration(p[0].value, p[2])
 
-    # While Loop
     @pg.production("statement : WHILE expression LBRACE statements RBRACE", precedence="STATEMENT")
     def while_statement(p):
         return ast.WhileLoop()
 
-    # Function Statement
     @pg.production("statement : RETURN expression")
     def return_statement(p):
         return ast.Return(p[1])
@@ -196,12 +204,11 @@ class CompilerParser(CompilerLexer):
     @pg.production("statement : FUNCTION NAMESPACE LPAREN parameters RPAREN LBRACE statements RBRACE")
     def function_statement(p):
         return ast.Function(
-            p[1],
+            p[1].value,
             p[3],
             p[6]
         )
 
-    # For Loop
     @pg.production("statement : FOR NAMESPACE IN expression LBRACE statements RBRACE", precedence="STATEMENT")
     def for_statement(p):
         return ast.ForLoop(
@@ -210,47 +217,57 @@ class CompilerParser(CompilerLexer):
             p[5]
         )
 
-    # Pass
     @pg.production("statement : PASS")
     def pass_statement(p):
         return ast.Pass()
 
-    # If Statement
     @pg.production("if : IF expression LBRACE statements RBRACE")
     def if_statement(p):
-        pass
+        return p[1], p[3]
 
     @pg.production("elif : ELIF expression LBRACE statements RBRACE")
     def elif_statement(p):
-        pass
+        return p[1], p[3]
 
     @pg.production("elifs : elif")
     def elifs(p):
-        return [p[0]]
+        return p[0]
 
     @pg.production("elifs : elifs elif")
     def elifs_elif(p):
-        return p[0] + [p[1]]
+        return p[0] + (p[1],)
 
     @pg.production("else : ELSE LBRACE statements RBRACE")
     def else_statement(p):
-        pass
+        return p[2]
 
     @pg.production("statement : if")
     def statement_if(p):
-        pass
+        return ast.If(
+            *p[0]
+        )
 
     @pg.production("statement : if elifs")
     def statement_if_elifs(p):
-        pass
+        return ast.If(
+            *p[0],
+            _elifs=p[1]
+        )
 
     @pg.production("statement : if elifs else")
     def statement_if_elifs_else(p):
-        pass
+        return ast.If(
+            *p[0],
+            _elifs=p[1],
+            _else=p[2]
+        )
 
     @pg.production("statement : if else")
     def statement_if_else(p):
-        pass
+        return ast.If(
+            *p[0],
+            _else=p[1]
+        )
 
     @pg.error
     def error(token):
